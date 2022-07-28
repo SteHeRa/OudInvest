@@ -4,9 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "node ./build/index.js",
-    "build": "webpack --mode=production --progress",
-    "build:dev": "webpack --mode=development --progress --watch",
+    "dev": "nodemon ./build/index.js",
+    "build": "tsc",
+    "build:dev": "tsc --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
