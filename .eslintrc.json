@@ -5,8 +5,7 @@
     "plugin:react/recommended",
     "plugin:jsx-a11y/recommended",
     "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "prettier/react"
+    "prettier"
   ],
   "rules": {
     "react/prop-types": 0,
@@ -15,21 +14,22 @@
     "explicit-module-boundary-types": "off",
     "@typescript-eslint/explicit-module-boundary-types": "off"
   },
-  "parser": "babel-eslint",
-  "plugins": [
-    "react",
-    "import",
-    "jsx-a11y",
-    "react-hooks",
-    "@typescript-eslint"
-  ],
+  "parser": "@typescript-eslint/parser",
   "parserOptions": {
-    "ecmaVersion": 2018,
+    "ecmaVersion": "latest",
     "sourceType": "module",
     "ecmaFeatures": {
       "jsx": true
     }
   },
+  "plugins": [
+    "react",
+    "import",
+    "jsx-a11y",
+    "react-hooks",
+    "@typescript-eslint",
+    "prettier"
+  ],
   "env": {
     "es6": true,
     "browser": true,
