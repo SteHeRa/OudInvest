@@ -1,4 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   PageHeader,
   Box,
@@ -10,7 +15,34 @@ import {
   Anchor,
 } from "grommet";
 
+const textColor = "light-1";
+
 const App = () => {
+  const [email, setEmail] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const postEmail = async (email) => {
+    setLoading(true);
+    setError("");
+    const res = await fetch("http://localhost:3000/api/email", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+      headers: {
+        "content-type": "application/json",
+      },
+    });
+
+    if (!res.ok) {
+      setError(
+        "An error occured while adding you to the early access list, please try again."
+      );
+    } else {
+      //redirect to page showing place in queue
+    }
+    setLoading(false);
+  };
+
   return (
     <ResponsiveContext.Consumer>
       {(size) =>
@@ -37,7 +69,7 @@ const App = () => {
                     }
                     subtitle={
                       <Text
-                        color="light-3"
+                        color={textColor}
                         size="large"
                         weight="bold"
                         margin="none"
@@ -57,19 +89,61 @@ const App = () => {
                     justify="center"
                   >
                     <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
-                      <TextInput placeholder="Enter email address" />
+                      <TextInput
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.currentTarget.value)}
+                      />
                     </Box>
                     <Box flex={{ grow: 1, shrink: 1 }}>
-                      <Button primary size="large" label="Get Early Access" />
+                      <Button
+                        primary
+                        size="large"
+                        label="Get Early Access"
+                        onClick={() => postEmail(email)}
+                      />
                     </Box>
                   </Box>
+                  {error ? (
+                    <Box
+                      fill="horizontal"
+                      pad={{ left: "150px", right: "150px" }}
+                      direction="row"
+                      gap="small"
+                      align="center"
+                      justify="center"
+                    >
+                      <Text
+                        color="status-error"
+                        weight="bold"
+                        textAlign="center"
+                      >
+                        {error}
+                      </Text>
+                    </Box>
+                  ) : null}
                   <Box>
-                    <Text color="light-3" weight="bold" textAlign="center">
-                      Our mission,{" "}
+                    <Text color={textColor} weight="bold" textAlign="center">
+                      OudInvest is bringing Halal Investing, to everyone
+                    </Text>
+                    <Text color={textColor} weight="bold" textAlign="center">
+                      We provide a sharia compliant commission-free digital
+                      platform to enable anybody to invest in Halal stocks,
+                      funds and commodities. Zero Fee.
+                    </Text>
+                    <Text color={textColor} weight="bold" textAlign="center">
+                      All of our verified Investment options have been screened
+                      by our Sharia advisors.{" "}
+                    </Text>
+                    <Text color={textColor} weight="bold" textAlign="center">
+                      Starting with just $1, Deposit, search, compare and invest
+                      - always Halal.
+                    </Text>
+                    <Text color={textColor} weight="bold" textAlign="center">
                       <Anchor
                         target="_blank"
                         href="https://wideo.co/view/37302901659007631560?utm_source=CopyPaste&utm_medium=share&utm_campaign=sharebox&html5=true"
-                        label="how it works."
+                        label="How it works."
                       />
                     </Text>
                   </Box>
@@ -80,7 +154,7 @@ const App = () => {
         ) : (
           <Box
             fill
-            background="linear-gradient(-225deg, rgba(0, 0, 0, 0) 55%, #FFCA58 )"
+            background="linear-gradient(-225deg, rgba(0, 0, 0, 0) 55%, #FF7D00 )"
           >
             <Box
               direction="column"
@@ -112,12 +186,34 @@ const App = () => {
               </Box>
               <Box fill="horizontal" direction="column" gap="medium">
                 <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
-                  <TextInput placeholder="Enter email address" />
+                  <TextInput
+                    placeholder="Enter email address"
+                    value={email}
+                    onChange={(e) => setEmail(e.currentTarget.value)}
+                  />
                 </Box>
                 <Box flex={{ grow: 1, shrink: 1 }}>
-                  <Button color="#228BE6" primary label="Get Early Access" />
+                  <Button
+                    color="#228BE6"
+                    primary
+                    label="Get Early Access"
+                    onClick={() => postEmail(email)}
+                  />
                 </Box>
               </Box>
+              {error ? (
+                <Box
+                  fill="horizontal"
+                  direction="row"
+                  gap="small"
+                  align="center"
+                  justify="center"
+                >
+                  <Text color="status-error" weight="bold" textAlign="center">
+                    {error}
+                  </Text>
+                </Box>
+              ) : null}
               <Box>
                 <Text color="dark-0" weight="bold" textAlign="center">
                   Our mission,{" "}

@@ -1,10 +1,11 @@
 import Head from "next/head";
 import { Grommet } from "grommet";
+import "../src/styles.css";
 
 const theme = {
   global: {
     colors: {
-      brand: "#FFCA58",
+      brand: "#FF7D00",
     },
     font: {
       family: "Roboto",
@@ -16,18 +17,8 @@ const theme = {
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
-      <Head>
-        <title>OudInvest</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        <link
-          rel="stylesheet"
-          href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"
-        />
-      </Head>
-      <Grommet theme={theme} full>
-        <Component {...pageProps} />
-      </Grommet>
-    </>
+    <Grommet theme={theme} full>
+      <Component style={{ margin: 0 }} {...pageProps} />
+    </Grommet>
   );
 }
