@@ -1,8 +1,8 @@
 import { Request, Response } from "express";
-import nc from "next-connect";
+import base from "../../src/middleware/common";
 import SibApiV3Sdk from "sib-api-v3-sdk";
 
-const handler = nc().post(async (req: Request, res: Response) => {
+const handler = base().post(async (req: Request, res: Response) => {
   try {
     let defaultClient = SibApiV3Sdk.ApiClient.instance;
 
@@ -17,7 +17,7 @@ const handler = nc().post(async (req: Request, res: Response) => {
 
     let apiInstance = new SibApiV3Sdk.ContactsApi();
 
-    const createContact = new SibApiV3Sdk.CreateContact();
+    const createDoiContact = new SibApiV3Sdk.CreateDoiContact();
 
     const { email } = req.body;
 
@@ -25,10 +25,12 @@ const handler = nc().post(async (req: Request, res: Response) => {
       res.status(400).json("Error: No email found in body");
     }
 
-    createContact.email = email;
-    createContact.listIds = [2];
+    createDoiContact.email = email;
+    createDoiContact.includeListIds = [3];
+    createDoiContact.templateId = 2;
+    createDoiContact.redirectionUrl = "http://localhost:3000/";
 
-    apiInstance.createContact(createContact).then(
+    apiInstance.createDoiContact(createDoiContact).then(
       function (data) {
         res.status(201).json("Contact Added Successfully");
       },
