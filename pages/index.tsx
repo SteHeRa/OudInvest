@@ -5,32 +5,42 @@ import {
   useQuery,
 } from "@tanstack/react-query";
 import {
-  PageHeader,
   Box,
   ResponsiveContext,
   TextInput,
   Button,
-  Heading,
   Text,
   Anchor,
   Stack,
+  Image,
 } from "grommet";
+import { useDispatch } from "react-redux";
+import {
+  startLoading,
+  stopLoading,
+} from "../src/features/loading/loadingSlice";
 
 const textColor = "light-1";
+const textColorMobile = "dark-0";
 
 const App = () => {
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+
+  const dispatch = useDispatch();
 
   const postEmail = async (email) => {
+    dispatch(startLoading());
+    setSuccess(false);
+    setError("");
+
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
       setError("Please enter a valid email address");
+      dispatch(stopLoading());
       return;
     }
 
-    setLoading(true);
-    setError("");
     const res = await fetch("http://localhost:3000/api/email", {
       method: "POST",
       body: JSON.stringify({ email }),
@@ -43,10 +53,11 @@ const App = () => {
       setError(
         "An error occured while adding you to the early access list, please try again."
       );
-    } else {
-      //redirect to page showing place in queue
+    } else if (res.ok) {
+      setSuccess(true);
+      setEmail("");
     }
-    setLoading(false);
+    dispatch(stopLoading());
   };
 
   return (
@@ -72,33 +83,16 @@ const App = () => {
                   flex
                   align="center"
                   justify="center"
-                  background="linear-gradient(0deg, rgba(0, 0, 0, 0.4) 55%, rgba(0, 0, 0, 0))"
+                  background="linear-gradient(0deg, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0))"
                 >
                   <Box fill="horizontal">
-                    <PageHeader
-                      title={
-                        <Heading
-                          color="brand"
-                          size="large"
-                          margin="none"
-                          textAlign="center"
-                        >
-                          OudInvest
-                        </Heading>
-                      }
-                      subtitle={
-                        <Text
-                          color={textColor}
-                          size="large"
-                          weight="bold"
-                          margin="none"
-                          textAlign="center"
-                        >
-                          Halal investing for everyone, is coming.
-                        </Text>
-                      }
-                      margin={{ bottom: "50px" }}
-                    />
+                    <Box basis="medium">
+                      <Image
+                        margin="xlarge"
+                        fit="contain"
+                        src="/oudinvest_logo_tagline.png"
+                      />
+                    </Box>
                     <Box
                       fill="horizontal"
                       pad={{ left: "150px", right: "150px" }}
@@ -147,6 +141,26 @@ const App = () => {
                         </Text>
                       </Box>
                     ) : null}
+                    {success ? (
+                      <Box
+                        fill="horizontal"
+                        pad={{ left: "150px", right: "150px" }}
+                        direction="row"
+                        gap="small"
+                        align="center"
+                        justify="center"
+                        margin={{ bottom: "50px" }}
+                      >
+                        <Text
+                          color="status-ok"
+                          weight="bold"
+                          textAlign="center"
+                        >
+                          Success! Please check your email to confirm your email
+                          address.
+                        </Text>
+                      </Box>
+                    ) : null}
                     <Box gap="small">
                       <Text color={textColor} weight="bold" textAlign="center">
                         OudInvest is bringing Halal Investing, to everyone
@@ -191,43 +205,26 @@ const App = () => {
               gap="medium"
             >
               <Box>
-                <PageHeader
-                  title={
-                    <Heading color="dark-0" size="large" margin="none">
-                      OudInvest
-                    </Heading>
-                  }
-                  subtitle={
-                    <Text
-                      color="dark-2"
-                      size="large"
-                      // weight="bold"
-                      margin="none"
-                    >
-                      Halal investing for everyone, is coming.
-                    </Text>
-                  }
-                  // actions={<Button label="Edit" primary />}
-                />
+                <Image fit="contain" src="/oudinvest_logo_tagline.png" />
               </Box>
-              <Box fill="horizontal" direction="column" gap="medium">
-                <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
-                  <TextInput
-                    placeholder="Enter email address"
-                    value={email}
-                    onChange={(e) => setEmail(e.currentTarget.value)}
-                  />
+              <Box fill="horizontal" direction="column" gap="large">
+                <Box gap="medium">
+                  <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
+                    <TextInput
+                      placeholder="Enter email address"
+                      value={email}
+                      onChange={(e) => setEmail(e.currentTarget.value)}
+                    />
+                  </Box>
+                  <Box flex={{ grow: 1, shrink: 1 }}>
+                    <Button
+                      color="brand"
+                      primary
+                      label="Get Early Access"
+                      onClick={() => postEmail(email)}
+                    />
+                  </Box>
                 </Box>
-                <Box flex={{ grow: 1, shrink: 1 }}>
-                  <Button
-                    color="#228BE6"
-                    primary
-                    label="Get Early Access"
-                    onClick={() => postEmail(email)}
-                  />
-                </Box>
-              </Box>
-              {error ? (
                 <Box
                   fill="horizontal"
                   direction="row"
@@ -235,11 +232,53 @@ const App = () => {
                   align="center"
                   justify="center"
                 >
-                  <Text color="status-error" weight="bold" textAlign="center">
-                    {error}
+                  {error ? (
+                    <Text color="status-error" weight="bold" textAlign="center">
+                      {error}
+                    </Text>
+                  ) : success ? (
+                    <Text color="status-ok" weight="bold" textAlign="center">
+                      Success! Please check your email to confirm your email
+                      address.
+                    </Text>
+                  ) : null}
+                </Box>
+                <Box gap="small">
+                  <Text
+                    color={textColorMobile}
+                    weight="bold"
+                    textAlign="center"
+                  >
+                    OudInvest is bringing Halal Investing, to everyone
+                  </Text>
+                  <Text
+                    color={textColorMobile}
+                    weight="bold"
+                    textAlign="center"
+                  >
+                    We provide a sharia compliant commission-free digital
+                    platform to enable anybody to invest in Halal stocks, funds
+                    and commodities. Zero Fee.
+                  </Text>
+                  <Text
+                    color={textColorMobile}
+                    weight="bold"
+                    textAlign="center"
+                  >
+                    All of our verified Investment options have been screened by
+                    our Sharia advisors.{" "}
+                  </Text>
+                  <Text
+                    color={textColorMobile}
+                    weight="bold"
+                    textAlign="center"
+                  >
+                    Starting with just $1, Deposit, search, compare and invest -
+                    always Halal.
                   </Text>
                 </Box>
-              ) : null}
+              </Box>
+
               <Box>
                 <Text color="dark-0" weight="bold" textAlign="center">
                   Our mission,{" "}
