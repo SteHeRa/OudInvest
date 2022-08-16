@@ -6,6 +6,7 @@ import {
   TextInput,
   Button,
   Text,
+  Paragraph,
   Anchor,
   Stack,
   Image,
@@ -213,78 +214,66 @@ const App = () => {
               pad="large"
               gap="medium"
             >
-              <Box>
+              <Box gap="medium">
                 <Image fit="contain" src="/oudinvest_logo_tagline.png" />
-              </Box>
-              <Box fill="horizontal" direction="column" gap="large">
-                <Box gap="medium">
-                  <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
-                    <TextInput
-                      placeholder="Enter email address"
-                      value={email}
-                      onChange={(e) => setEmail(e.currentTarget.value)}
-                    />
-                  </Box>
-                  <Box flex={{ grow: 1, shrink: 1 }}>
-                    <Button
-                      color="brand"
-                      primary
-                      label="Get Early Access"
-                      onClick={() => handleSubmit(email)}
-                    />
-                  </Box>
-                </Box>
-                <Box
-                  fill="horizontal"
-                  direction="row"
-                  gap="small"
-                  align="center"
-                  justify="center"
-                >
-                  {error ? (
-                    <Text color="status-error" weight="bold" textAlign="center">
-                      {error}
-                    </Text>
-                  ) : success ? (
-                    <Text color="status-ok" weight="bold" textAlign="center">
-                      Success! Please check your email to confirm your email
-                      address.
-                    </Text>
-                  ) : null}
-                </Box>
                 <Box gap="small">
-                  <Text
-                    color={textColorMobile}
-                    weight="bold"
-                    textAlign="center"
-                  >
-                    OudInvest is bringing Halal Investing, to everyone
-                  </Text>
-                  <Text
-                    color={textColorMobile}
-                    weight="bold"
-                    textAlign="center"
-                  >
-                    We provide a sharia compliant commission-free digital
+                  <Paragraph color={textColorMobile} size="small">
+                    {`OudInvest is bringing Halal Investing, to everyone`}
+                    <br />
+                    <br />
+                    {`We provide a sharia compliant commission-free digital
                     platform to enable anybody to invest in Halal stocks, funds
-                    and commodities. Zero Fee.
-                  </Text>
-                  <Text
-                    color={textColorMobile}
-                    weight="bold"
-                    textAlign="center"
+                    and commodities. Zero Fee.`}
+                    <br />
+                    <br />
+                    {`All of our verified Investment options have been screened by
+                    our Sharia advisors.`}
+                    <br />
+                    <br />
+                    {`Starting with just $1, Deposit, search, compare and invest -
+                    always Halal.`}
+                  </Paragraph>
+                </Box>
+                <Box fill="horizontal" direction="column" gap="large">
+                  <Box gap="medium">
+                    <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
+                      <TextInput
+                        placeholder="Enter email address"
+                        value={email}
+                        onChange={(e) => setEmail(e.currentTarget.value)}
+                      />
+                    </Box>
+                    <Box flex={{ grow: 1, shrink: 1 }}>
+                      <Button
+                        color="brand"
+                        primary
+                        label="Get Early Access"
+                        onClick={() => handleSubmit(email)}
+                      />
+                    </Box>
+                  </Box>
+                  <Box
+                    fill="horizontal"
+                    direction="row"
+                    gap="small"
+                    align="center"
+                    justify="center"
                   >
-                    All of our verified Investment options have been screened by
-                    our Sharia advisors.{" "}
-                  </Text>
-                  <Text
-                    color={textColorMobile}
-                    weight="bold"
-                    textAlign="center"
-                  >
-                    Starting with just $1, Deposit, search, compare and invest -
-                    always Halal.
-                  </Text>
+                    {error ? (
+                      <Text
+                        color="status-error"
+                        weight="bold"
+                        textAlign="center"
+                      >
+                        {error}
+                      </Text>
+                    ) : success ? (
+                      <Text color="status-ok" weight="bold" textAlign="center">
+                        Success! Please check your email to confirm your email
+                        address.
+                      </Text>
+                    ) : null}
+                  </Box>
                 </Box>
               </Box>
 
