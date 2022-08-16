@@ -1,9 +1,5 @@
-import React, { useState } from "react";
-import {
-  QueryClient,
-  QueryClientProvider,
-  useQuery,
-} from "@tanstack/react-query";
+import React, { useState, useEffect } from "react";
+import { useMutation } from "@tanstack/react-query";
 import {
   Box,
   ResponsiveContext,
@@ -28,37 +24,50 @@ const App = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const dispatch = useDispatch();
-
-  const postEmail = async (email) => {
-    dispatch(startLoading());
-    setSuccess(false);
-    setError("");
-
-    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
-      setError("Please enter a valid email address");
-      dispatch(stopLoading());
-      return;
-    }
-
-    const res = await fetch("http://localhost:3000/api/email", {
+  const postEmail = useMutation((email) => {
+    return fetch("http://localhost:3000/api/email", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: {
         "content-type": "application/json",
       },
     });
+  });
 
-    if (!res.ok) {
+  const dispatch = useDispatch();
+
+  const handleSubmit = async (email) => {
+    setSuccess(false);
+    setError("");
+
+    if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(email)) {
+      setError("Please enter a valid email address");
+      return;
+    }
+
+    postEmail.mutate(email);
+  };
+
+  useEffect(() => {
+    const { isLoading, isError, isSuccess } = postEmail;
+
+    if (isLoading) {
+      dispatch(startLoading());
+    }
+
+    if (isError) {
+      dispatch(stopLoading());
       setError(
         "An error occured while adding you to the early access list, please try again."
       );
-    } else if (res.ok) {
+    }
+
+    if (isSuccess) {
+      dispatch(stopLoading());
       setSuccess(true);
       setEmail("");
     }
-    dispatch(stopLoading());
-  };
+  }, [postEmail]);
 
   return (
     <ResponsiveContext.Consumer>
@@ -118,7 +127,7 @@ const App = () => {
                           primary
                           size="large"
                           label="Get Early Access"
-                          onClick={() => postEmail(email)}
+                          onClick={() => handleSubmit(email)}
                         />
                       </Box>
                     </Box>
@@ -221,7 +230,7 @@ const App = () => {
                       color="brand"
                       primary
                       label="Get Early Access"
-                      onClick={() => postEmail(email)}
+                      onClick={() => handleSubmit(email)}
                     />
                   </Box>
                 </Box>

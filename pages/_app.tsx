@@ -1,8 +1,10 @@
+import React from "react";
 import Head from "next/head";
 import { Grommet } from "grommet";
 import { store } from "../src/store";
 import { Provider } from "react-redux";
 import ReduxStateComponentsWrapper from "../src/wrappers/ReduxStateComponentsWrapper";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import "../src/styles.css";
 
 const theme = {
@@ -19,19 +21,25 @@ const theme = {
 };
 
 export default function App({ Component, pageProps }) {
+  const queryClient = new QueryClient();
+
   return (
     <>
       <Head>
         <title>OudInvest</title>
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
-      <Provider store={store}>
-        <Grommet theme={theme} full>
-          <ReduxStateComponentsWrapper>
-            <Component style={{ margin: 0 }} {...pageProps} />
-          </ReduxStateComponentsWrapper>
-        </Grommet>
-      </Provider>
+      <React.StrictMode>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <Grommet theme={theme} full>
+              <ReduxStateComponentsWrapper>
+                <Component style={{ margin: 0 }} {...pageProps} />
+              </ReduxStateComponentsWrapper>
+            </Grommet>
+          </Provider>
+        </QueryClientProvider>
+      </React.StrictMode>
     </>
   );
 }
