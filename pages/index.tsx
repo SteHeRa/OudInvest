@@ -25,14 +25,21 @@ const App = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const postEmail = useMutation((email) => {
-    return fetch("http://localhost:3000/api/email", {
+  const postEmail = useMutation(async (email) => {
+    const response = await fetch("http://localhost:3000/api/email", {
       method: "POST",
       body: JSON.stringify({ email }),
       headers: {
         "content-type": "application/json",
       },
     });
+
+    if (!response.ok) {
+      const result = await response.json();
+      throw new Error(result);
+    }
+
+    return response;
   });
 
   const dispatch = useDispatch();

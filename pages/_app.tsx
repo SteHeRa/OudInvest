@@ -5,6 +5,7 @@ import { store } from "../src/store";
 import { Provider } from "react-redux";
 import ReduxStateComponentsWrapper from "../src/wrappers/ReduxStateComponentsWrapper";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import "../src/styles.css";
 
 const theme = {
@@ -38,6 +39,7 @@ export default function App({ Component, pageProps }) {
               </ReduxStateComponentsWrapper>
             </Grommet>
           </Provider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </React.StrictMode>
     </>
