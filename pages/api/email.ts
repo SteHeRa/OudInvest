@@ -90,12 +90,12 @@ const handler = base()
 
         await mailChimpClient.lists.setListMember(audienceId, userId, {
           status: "subscribed",
-          merge_fields: { QUEUEPOS: queueLength + 1 },
+          merge_fields: { QUEUEPOS: queueLength },
         });
 
         return res.status(200).send({
           updated: true,
-          queuePositon: queueLength + 1,
+          queuePositon: queueLength,
         });
       } else if (user.status === "subscribed") {
         return res.status(200).send({

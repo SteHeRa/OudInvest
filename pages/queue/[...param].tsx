@@ -6,7 +6,19 @@ import {
   startLoading,
   stopLoading,
 } from "../../src/features/loading/loadingSlice";
-import { Box, ResponsiveContext, Text, Stack, Header } from "grommet";
+import { Box, ResponsiveContext, Text, Stack, Image } from "grommet";
+
+const isOrAre = (number: string) => {
+  const isOrAre = parseInt(number) === 1 ? "is" : "are";
+
+  return isOrAre;
+};
+
+const personOrPeople = (number: string) => {
+  const personOrPeople = parseInt(number) === 1 ? "person" : "people";
+
+  return personOrPeople;
+};
 
 const Queue = () => {
   const router = useRouter();
@@ -16,6 +28,8 @@ const Queue = () => {
   const [userId, setUserId] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
+  const [isUpdated, setIsUpdated] = useState(false);
+  const [queuePosition, setQueuePosition] = useState<string | null>(null);
 
   const { param } = router.query;
 
@@ -47,12 +61,15 @@ const Queue = () => {
   );
 
   const displayQueuePosiiton = async (data) => {
-    const { updated, queuePosition } = await data.json();
-    if (updated) {
-      //Display message saying user email has been verified
-    }
+    const {
+      updated,
+      queuePosition,
+    }: { updated: boolean; queuePosition: string } = await data.json();
+
+    setIsUpdated(updated);
+
     if (queuePosition) {
-      //display users position in the queue
+      setQueuePosition(queuePosition);
     }
   };
 
@@ -73,9 +90,9 @@ const Queue = () => {
 
     if (isError) {
       dispatch(stopLoading());
-      // setError(
-      //   "An error occured while adding you to the early access list, please try again."
-      // );
+      setError(
+        "An error occured while while verifying your email, please try again."
+      );
     }
 
     if (isSuccess) {
@@ -106,10 +123,19 @@ const Queue = () => {
 
               <Box
                 fill
-                direction="row"
+                direction="column"
                 flex
                 overflow={{ horizontal: "hidden" }}
+                justify="center"
+                background="linear-gradient(0deg, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0))"
               >
+                <Box basis="medium">
+                  <Image
+                    margin="xlarge"
+                    fit="contain"
+                    src="/oudinvest_logo_tagline.png"
+                  />
+                </Box>
                 {error ? (
                   <Box
                     fill="horizontal"
@@ -135,9 +161,38 @@ const Queue = () => {
                     justify="center"
                     margin={{ bottom: "50px" }}
                   >
-                    <Text color="status-ok" weight="bold" textAlign="center">
-                      Success! Please check your email to confirm your email
-                      address.
+                    <Text
+                      color="dark-0"
+                      weight="bold"
+                      size="xlarge"
+                      textAlign="center"
+                    >
+                      Success! You have been added to the early access list. We
+                      will be in touch with updates soon!
+                    </Text>
+                  </Box>
+                ) : null}
+                {queuePosition ? (
+                  <Box
+                    fill="horizontal"
+                    pad={{ left: "150px", right: "150px" }}
+                    direction="row"
+                    gap="small"
+                    align="center"
+                    justify="center"
+                    margin={{ bottom: "50px" }}
+                  >
+                    <Text
+                      color="brand"
+                      weight="bold"
+                      size="xlarge"
+                      textAlign="center"
+                    >
+                      {`There ${isOrAre(
+                        queuePosition
+                      )} ${queuePosition} ${personOrPeople(
+                        queuePosition
+                      )} ahead of you in the queue.`}
                     </Text>
                   </Box>
                 ) : null}
@@ -158,10 +213,12 @@ const Queue = () => {
               gap="medium"
             >
               <Box gap="medium">
+                <Image fit="contain" src="/oudinvest_logo_tagline.png" />
+
                 <Box fill="horizontal" direction="column" gap="large">
                   <Box
                     fill="horizontal"
-                    direction="row"
+                    direction="column"
                     gap="small"
                     align="center"
                     justify="center"
@@ -174,10 +231,30 @@ const Queue = () => {
                       >
                         {error}
                       </Text>
-                    ) : success ? (
-                      <Text color="status-ok" weight="bold" textAlign="center">
-                        Success! Please check your email to confirm your email
-                        address.
+                    ) : null}
+                    {success ? (
+                      <Text
+                        color="dark-0"
+                        weight="bold"
+                        size="xlarge"
+                        textAlign="center"
+                      >
+                        Success! You have been added to the early access list.
+                        We will be in touch with updates soon!
+                      </Text>
+                    ) : null}
+                    {queuePosition ? (
+                      <Text
+                        color="brand"
+                        weight="bold"
+                        size="xlarge"
+                        textAlign="center"
+                      >
+                        {`There ${isOrAre(
+                          queuePosition
+                        )} ${queuePosition} ${personOrPeople(
+                          queuePosition
+                        )} ahead of you in the queue.`}
                       </Text>
                     ) : null}
                   </Box>
