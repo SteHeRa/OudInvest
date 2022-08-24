@@ -25,7 +25,7 @@ const App = () => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  const postEmail = useMutation(async (email) => {
+  const postEmail = useMutation(async (email: string) => {
     const response = await fetch("http://localhost:3000/api/email", {
       method: "POST",
       body: JSON.stringify({ email }),
@@ -44,7 +44,7 @@ const App = () => {
 
   const dispatch = useDispatch();
 
-  const handleSubmit = async (email) => {
+  const handleSubmit = async (email: string) => {
     setSuccess(false);
     setError("");
 

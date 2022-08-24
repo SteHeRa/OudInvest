@@ -1,5 +1,6 @@
 import React from "react";
 import Head from "next/head";
+import { AppProps } from "next/app";
 import { Grommet } from "grommet";
 import { store } from "../src/store";
 import { Provider } from "react-redux";
@@ -21,7 +22,7 @@ const theme = {
   },
 };
 
-export default function App({ Component, pageProps }) {
+export default function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient();
 
   return (

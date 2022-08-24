@@ -1,7 +1,9 @@
 import React from "react";
 import LoadingSpinner from "../features/loading/LoadingSpinner";
 
-const ReduxStateComponentsWrapper = ({ children }) => {
+const ReduxStateComponentsWrapper: React.FC<{ children: React.ReactNode }> = ({
+  children,
+}) => {
   return (
     <>
       <LoadingSpinner />

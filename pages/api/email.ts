@@ -1,6 +1,69 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import base from "../../src/middleware/common";
-import mailChimpClient from "mailchimp-marketing";
+import mailChimpClient from "@mailchimp/mailchimp_marketing";
+
+interface List {
+  id: string;
+  web_id: number;
+  name: string;
+  contact: {
+    company: string;
+    ddress1: string;
+    address2: string;
+    city: string;
+    state: string;
+    zip: string;
+    country: string;
+    phone: string;
+  };
+  permission_reminder: string;
+  use_archive_bar: false;
+  campaign_defaults: {
+    from_name: string;
+    from_email: string;
+    subject: string;
+    language: string;
+  };
+  notify_on_subscribe: false;
+  notify_on_unsubscribe: false;
+  date_created: string;
+  list_rating: number;
+  email_type_option: true;
+  subscribe_url_short: string;
+  subscribe_url_long: string;
+  beamer_address: string;
+  visibility: string;
+  double_optin: false;
+  has_welcome: false;
+  marketing_permissions: false;
+  modules: string[];
+  stats: {
+    member_count: number;
+    total_contacts: number;
+    unsubscribe_count: number;
+    cleaned_count: number;
+    member_count_since_send: number;
+    unsubscribe_count_since_send: number;
+    cleaned_count_since_send: number;
+    campaign_count: number;
+    campaign_last_sent: string;
+    merge_field_count: number;
+    avg_sub_rate: number;
+    avg_unsub_rate: number;
+    target_sub_rate: number;
+    open_rate: number;
+    click_rate: number;
+    last_sub_date: string;
+    last_unsub_date: string;
+  };
+  _links: {
+    rel: string;
+    href: string;
+    method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "OPTIONS" | "HEAD";
+    targetSchema: string;
+    schema: string;
+  }[];
+}
 
 const handler = base()
   .post(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -32,16 +95,16 @@ const handler = base()
         server: serverPrefix,
       });
 
-      await mailChimpClient.lists.addListMember(audienceId, {
+      const thing = await mailChimpClient.lists.addListMember(audienceId, {
         email_address: email,
         status: "pending",
       });
 
       return res.status(201).json("Contact Added Successfully");
     } catch (error) {
-      const errorMessage = JSON.parse(error.response.text).title;
+      console.error(error);
 
-      return res.status(500).json(errorMessage);
+      return res.status(500).json("Internal Server Error");
     }
   })
   .put(async (req: NextApiRequest, res: NextApiResponse) => {
@@ -77,20 +140,28 @@ const handler = base()
         server: serverPrefix,
       });
 
-      const user = await mailChimpClient.lists.getListMember(audienceId, email);
+      const user = (await mailChimpClient.lists.getListMember(
+        audienceId,
+        email
+      )) as mailChimpClient.MembersSuccessResponse;
       if (user.unique_email_id !== userId) {
         return res.status(400).json("Error: Invalid user Id");
       }
 
       if (user.status === "pending") {
         const userId = user.id;
-        const list = await mailChimpClient.lists.getList(audienceId);
+        const Lists = mailChimpClient.lists as unknown as {
+          getList: (listId: string) => Promise<List>;
+        };
+        const list = await Lists.getList(audienceId);
 
         const queueLength = list.stats.member_count;
 
         await mailChimpClient.lists.setListMember(audienceId, userId, {
           status: "subscribed",
           merge_fields: { QUEUEPOS: queueLength },
+          status_if_new: "pending",
+          email_address: email,
         });
 
         return res.status(200).send({
@@ -108,9 +179,7 @@ const handler = base()
           .json("Error: User status is neither pending nor subscribed");
       }
     } catch (error) {
-      const errorMessage = JSON.parse(error.response.text).title;
-
-      return res.status(500).json(errorMessage);
+      return res.status(500).json("Internal Server Error");
     }
   });
 

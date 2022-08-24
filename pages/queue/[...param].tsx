@@ -60,7 +60,7 @@ const Queue = () => {
     }
   );
 
-  const displayQueuePosiiton = async (data) => {
+  const displayQueuePosiiton = async (data: Response) => {
     const {
       updated,
       queuePosition,
