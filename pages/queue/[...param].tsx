@@ -52,7 +52,7 @@ const Queue = () => {
       });
 
       if (!response.ok) {
-        const result = await response.json();
+        const result = await response.clone().json();
         throw new Error(result);
       }
 
@@ -64,7 +64,7 @@ const Queue = () => {
     const {
       updated,
       queuePosition,
-    }: { updated: boolean; queuePosition: string } = await data.json();
+    }: { updated: boolean; queuePosition: string } = await data.clone().json();
 
     setIsUpdated(updated);
 
@@ -129,9 +129,9 @@ const Queue = () => {
                 justify="center"
                 background="linear-gradient(0deg, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0))"
               >
-                <Box basis="medium">
+                <Box basis="small">
                   <Image
-                    margin="xlarge"
+                    margin="large"
                     fit="contain"
                     src="/oudinvest_logo_tagline.png"
                   />
@@ -167,8 +167,7 @@ const Queue = () => {
                       size="xlarge"
                       textAlign="center"
                     >
-                      Success! You have been added to the early access list. We
-                      will be in touch with updates soon!
+                      Success! You have been added to the early access list.
                     </Text>
                   </Box>
                 ) : null}
@@ -176,26 +175,44 @@ const Queue = () => {
                   <Box
                     fill="horizontal"
                     pad={{ left: "150px", right: "150px" }}
-                    direction="row"
+                    direction="column"
                     gap="small"
                     align="center"
                     justify="center"
                     margin={{ bottom: "50px" }}
                   >
-                    <Text
-                      color="brand"
-                      weight="bold"
-                      size="xlarge"
-                      textAlign="center"
-                    >
-                      {`There ${isOrAre(
-                        queuePosition
-                      )} ${queuePosition} ${personOrPeople(
-                        queuePosition
-                      )} ahead of you in the queue.`}
-                    </Text>
+                    <Box fill="horizontal">
+                      <Text color="brand" size="3xl" textAlign="center">
+                        {`There ${isOrAre(queuePosition)}`}
+                      </Text>
+                    </Box>
+                    <Box fill="horizontal">
+                      <Text
+                        color="brand"
+                        weight="bold"
+                        size="6xl"
+                        textAlign="center"
+                      >
+                        {queuePosition}
+                      </Text>
+                    </Box>
+                    <Box fill="horizontal">
+                      <Text color="brand" size="3xl" textAlign="center">
+                        {`${personOrPeople(
+                          queuePosition
+                        )} ahead of you in the queue.`}
+                      </Text>
+                    </Box>
                   </Box>
                 ) : null}
+                <Text
+                  color="dark-0"
+                  weight="bold"
+                  size="xlarge"
+                  textAlign="center"
+                >
+                  We will be in touch with updates soon!
+                </Text>
               </Box>
             </Stack>
           </Box>
@@ -213,7 +230,11 @@ const Queue = () => {
               gap="medium"
             >
               <Box gap="medium">
-                <Image fit="contain" src="/oudinvest_logo_tagline.png" />
+                <Image
+                  fit="contain"
+                  src="/oudinvest_logo_tagline.png"
+                  margin={{ bottom: "50px" }}
+                />
 
                 <Box fill="horizontal" direction="column" gap="large">
                   <Box
@@ -240,23 +261,49 @@ const Queue = () => {
                         textAlign="center"
                       >
                         Success! You have been added to the early access list.
-                        We will be in touch with updates soon!
                       </Text>
                     ) : null}
                     {queuePosition ? (
-                      <Text
-                        color="brand"
-                        weight="bold"
-                        size="xlarge"
-                        textAlign="center"
+                      <Box
+                        fill="horizontal"
+                        direction="column"
+                        gap="small"
+                        align="center"
+                        justify="center"
+                        margin={{ bottom: "50px" }}
                       >
-                        {`There ${isOrAre(
-                          queuePosition
-                        )} ${queuePosition} ${personOrPeople(
-                          queuePosition
-                        )} ahead of you in the queue.`}
-                      </Text>
+                        <Box fill="horizontal">
+                          <Text color="brand" size="3xl" textAlign="center">
+                            {`There ${isOrAre(queuePosition)}`}
+                          </Text>
+                        </Box>
+                        <Box fill="horizontal">
+                          <Text
+                            color="brand"
+                            weight="bold"
+                            size="6xl"
+                            textAlign="center"
+                          >
+                            {queuePosition}
+                          </Text>
+                        </Box>
+                        <Box fill="horizontal">
+                          <Text color="brand" size="3xl" textAlign="center">
+                            {`${personOrPeople(
+                              queuePosition
+                            )} ahead of you in the queue.`}
+                          </Text>
+                        </Box>
+                      </Box>
                     ) : null}
+                    <Text
+                      color="dark-0"
+                      weight="bold"
+                      size="xlarge"
+                      textAlign="center"
+                    >
+                      We will be in touch with updates soon!
+                    </Text>
                   </Box>
                 </Box>
               </Box>
