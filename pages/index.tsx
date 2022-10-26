@@ -1,24 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import {
-  Box,
-  ResponsiveContext,
-  TextInput,
-  Button,
-  Text,
-  Paragraph,
-  Anchor,
-  Stack,
-  Image,
-} from "grommet";
 import { useDispatch } from "react-redux";
 import {
   startLoading,
   stopLoading,
 } from "../src/features/loading/loadingSlice";
-
-const textColor = "light-1";
-const textColorMobile = "dark-0";
+import SignUp from "../src/components/SignUp";
 
 const App = () => {
   const [email, setEmail] = useState("");
@@ -26,13 +13,16 @@ const App = () => {
   const [success, setSuccess] = useState(false);
 
   const postEmail = useMutation(async (email: string) => {
-    const response = await fetch("http://localhost:3000/api/email", {
-      method: "POST",
-      body: JSON.stringify({ email }),
-      headers: {
-        "content-type": "application/json",
-      },
-    });
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_ROOT_URL}/api/email`,
+      {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: {
+          "content-type": "application/json",
+        },
+      }
+    );
 
     if (!response.ok) {
       const result = await response.json();
@@ -41,6 +31,11 @@ const App = () => {
 
     return response;
   });
+
+  const storeEmail = async (data: Response) => {
+    const { email } = await data.clone().json();
+    localStorage.setItem("email", email);
+  };
 
   const dispatch = useDispatch();
 
@@ -57,7 +52,7 @@ const App = () => {
   };
 
   useEffect(() => {
-    const { isLoading, isError, isSuccess } = postEmail;
+    const { isLoading, isError, isSuccess, data } = postEmail;
 
     if (isLoading) {
       dispatch(startLoading());
@@ -71,6 +66,7 @@ const App = () => {
     }
 
     if (isSuccess) {
+      storeEmail(data);
       dispatch(stopLoading());
       setSuccess(true);
       setEmail("");
@@ -78,228 +74,13 @@ const App = () => {
   }, [postEmail]);
 
   return (
-    <ResponsiveContext.Consumer>
-      {(size) =>
-        size !== "small" ? (
-          <Box fill>
-            <Stack fill>
-              <Box
-                fill
-                flex
-                align="center"
-                justify="center"
-                background="url(/background.jpg)"
-              ></Box>
-              <Box
-                fill
-                direction="row"
-                flex
-                overflow={{ horizontal: "hidden" }}
-              >
-                <Box
-                  flex
-                  align="center"
-                  justify="center"
-                  background="linear-gradient(0deg, rgba(0, 0, 0, 0.6) 55%, rgba(0, 0, 0, 0))"
-                >
-                  <Box fill="horizontal">
-                    <Box basis="medium">
-                      <Image
-                        margin="xlarge"
-                        fit="contain"
-                        src="/oudinvest_logo_tagline.png"
-                      />
-                    </Box>
-                    <Box
-                      fill="horizontal"
-                      pad={{ left: "150px", right: "150px" }}
-                      direction="row"
-                      gap="small"
-                      align="center"
-                      justify="center"
-                      margin={{ bottom: "50px" }}
-                    >
-                      <Box
-                        flex={{ grow: 4 }}
-                        background="light-2"
-                        round="xsmall"
-                      >
-                        <TextInput
-                          placeholder="Enter email address"
-                          value={email}
-                          onChange={(e) => setEmail(e.currentTarget.value)}
-                        />
-                      </Box>
-                      <Box flex={{ grow: 1, shrink: 1 }}>
-                        <Button
-                          primary
-                          size="large"
-                          label="Get Early Access"
-                          onClick={() => handleSubmit(email)}
-                        />
-                      </Box>
-                    </Box>
-                    {error ? (
-                      <Box
-                        fill="horizontal"
-                        pad={{ left: "150px", right: "150px" }}
-                        direction="row"
-                        gap="small"
-                        align="center"
-                        justify="center"
-                        margin={{ bottom: "50px" }}
-                      >
-                        <Text
-                          color="status-error"
-                          weight="bold"
-                          textAlign="center"
-                        >
-                          {error}
-                        </Text>
-                      </Box>
-                    ) : null}
-                    {success ? (
-                      <Box
-                        fill="horizontal"
-                        pad={{ left: "150px", right: "150px" }}
-                        direction="row"
-                        gap="small"
-                        align="center"
-                        justify="center"
-                        margin={{ bottom: "50px" }}
-                      >
-                        <Text
-                          color="status-ok"
-                          weight="bold"
-                          textAlign="center"
-                        >
-                          Success! Please check your email to confirm your email
-                          address.
-                        </Text>
-                      </Box>
-                    ) : null}
-                    <Box gap="small">
-                      <Text color={textColor} weight="bold" textAlign="center">
-                        OudInvest is bringing Halal Investing, to everyone
-                      </Text>
-                      <Text color={textColor} weight="bold" textAlign="center">
-                        We provide a sharia compliant commission-free digital
-                        platform to enable anybody to invest in Halal stocks,
-                        funds and commodities. Zero Fee.
-                      </Text>
-                      <Text color={textColor} weight="bold" textAlign="center">
-                        All of our verified Investment options have been
-                        screened by our Sharia advisors.{" "}
-                      </Text>
-                      <Text color={textColor} weight="bold" textAlign="center">
-                        Starting with just $1, Deposit, search, compare and
-                        invest - always Halal.
-                      </Text>
-                      <Text color={textColor} weight="bold" textAlign="center">
-                        <Anchor
-                          target="_blank"
-                          href="https://wideo.co/view/37302901659007631560?utm_source=CopyPaste&utm_medium=share&utm_campaign=sharebox&html5=true"
-                          label="How it works."
-                        />
-                      </Text>
-                    </Box>
-                  </Box>
-                </Box>
-              </Box>
-            </Stack>
-          </Box>
-        ) : (
-          <Box
-            fill
-            background="linear-gradient(-225deg, rgba(0, 0, 0, 0) 55%, #FF7D00 )"
-          >
-            <Box
-              direction="column"
-              flex
-              justify="between"
-              overflow={{ horizontal: "hidden" }}
-              pad="large"
-              gap="medium"
-            >
-              <Box gap="medium">
-                <Image fit="contain" src="/oudinvest_logo_tagline.png" />
-                <Box gap="small">
-                  <Paragraph color={textColorMobile} size="small">
-                    {`OudInvest is bringing Halal Investing, to everyone`}
-                    <br />
-                    <br />
-                    {`We provide a sharia compliant commission-free digital
-                    platform to enable anybody to invest in Halal stocks, funds
-                    and commodities. Zero Fee.`}
-                    <br />
-                    <br />
-                    {`All of our verified Investment options have been screened by
-                    our Sharia advisors.`}
-                    <br />
-                    <br />
-                    {`Starting with just $1, Deposit, search, compare and invest -
-                    always Halal.`}
-                  </Paragraph>
-                </Box>
-                <Box fill="horizontal" direction="column" gap="large">
-                  <Box gap="medium">
-                    <Box flex={{ grow: 4 }} background="light-2" round="xsmall">
-                      <TextInput
-                        placeholder="Enter email address"
-                        value={email}
-                        onChange={(e) => setEmail(e.currentTarget.value)}
-                      />
-                    </Box>
-                    <Box flex={{ grow: 1, shrink: 1 }}>
-                      <Button
-                        color="brand"
-                        primary
-                        label="Get Early Access"
-                        onClick={() => handleSubmit(email)}
-                      />
-                    </Box>
-                  </Box>
-                  <Box
-                    fill="horizontal"
-                    direction="row"
-                    gap="small"
-                    align="center"
-                    justify="center"
-                  >
-                    {error ? (
-                      <Text
-                        color="status-error"
-                        weight="bold"
-                        textAlign="center"
-                      >
-                        {error}
-                      </Text>
-                    ) : success ? (
-                      <Text color="status-ok" weight="bold" textAlign="center">
-                        Success! Please check your email to confirm your email
-                        address.
-                      </Text>
-                    ) : null}
-                  </Box>
-                </Box>
-              </Box>
-
-              <Box>
-                <Text color="dark-0" weight="bold" textAlign="center">
-                  Our mission,{" "}
-                  <Anchor
-                    color="#228BE6"
-                    target="_blank"
-                    href="https://wideo.co/view/37302901659007631560?utm_source=CopyPaste&utm_medium=share&utm_campaign=sharebox&html5=true"
-                    label="how it works."
-                  />
-                </Text>
-              </Box>
-            </Box>
-          </Box>
-        )
-      }
-    </ResponsiveContext.Consumer>
+    <SignUp
+      email={email}
+      setEmail={setEmail}
+      success={success}
+      error={error}
+      handleSubmit={handleSubmit}
+    />
   );
 };
 

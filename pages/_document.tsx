@@ -46,6 +46,10 @@ export default class StyledDocument extends Document {
             rel="stylesheet"
             href="https://fonts.googleapis.com/css?family=Roboto:300,400,500"
           />
+          <script
+            src={`${process.env.NEXT_PUBLIC_FONTAWESOME_URL}`}
+            crossOrigin="anonymous"
+          />
         </Head>
         <body>
           <Main />

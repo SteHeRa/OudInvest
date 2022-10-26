@@ -12,7 +12,7 @@ import "../src/styles.css";
 const theme = {
   global: {
     colors: {
-      brand: "#FF7D00",
+      brand: "#89C33B",
     },
     font: {
       family: "Roboto",

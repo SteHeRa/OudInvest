@@ -95,12 +95,12 @@ const handler = base()
         server: serverPrefix,
       });
 
-      const thing = await mailChimpClient.lists.addListMember(audienceId, {
+      const newMember = (await mailChimpClient.lists.addListMember(audienceId, {
         email_address: email,
         status: "pending",
-      });
+      })) as mailChimpClient.MembersSuccessResponse;
 
-      return res.status(201).json("Contact Added Successfully");
+      return res.status(201).json({ email: newMember.email_address });
     } catch (error) {
       console.error(error);
 
@@ -125,14 +125,10 @@ const handler = base()
         return res.status(500).send("Error: No audience Id found");
       }
 
-      const { email, userId } = req.body;
+      const { email } = req.body;
 
       if (!email) {
         return res.status(400).json("Error: No email found in body");
-      }
-
-      if (!userId) {
-        return res.status(400).json("Error: No user Id found in body");
       }
 
       mailChimpClient.setConfig({
@@ -144,11 +140,8 @@ const handler = base()
         audienceId,
         email
       )) as mailChimpClient.MembersSuccessResponse;
-      if (user.unique_email_id !== userId) {
-        return res.status(400).json("Error: Invalid user Id");
-      }
 
-      if (user.status === "pending") {
+      if (user.status === "subscribed" && !user.merge_fields.QUEUEPOS) {
         const userId = user.id;
         const Lists = mailChimpClient.lists as unknown as {
           getList: (listId: string) => Promise<List>;
@@ -165,20 +158,19 @@ const handler = base()
         });
 
         return res.status(200).send({
-          updated: true,
-          queuePositon: queueLength,
+          queuePosition: queueLength,
         });
-      } else if (user.status === "subscribed") {
+      } else if (user.status === "subscribed" && user.merge_fields.QUEUEPOS) {
         return res.status(200).send({
-          updated: false,
           queuePosition: user.merge_fields.QUEUEPOS,
         });
       } else {
         return res
           .status(400)
-          .json("Error: User status is neither pending nor subscribed");
+          .json("Error: User is not subscribed to mailing list");
       }
     } catch (error) {
+      console.error(error);
       return res.status(500).json("Internal Server Error");
     }
   });
